@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import classes from "./Person.css";
 import Auxilery from "../../../hoc/Auxilery";
 import withClass from "../../../hoc/withClass";
+import AuthContext from "../../../context/auth-context";
 
 // const Person = (props) => {
 //   console.log("[Person.js rendering...]");
@@ -18,14 +19,20 @@ import withClass from "../../../hoc/withClass";
 // };
 
 class Person extends Component {
-  constructor(props){
-    super(props)
-    this.inputElementRef = React.createRef()
+  constructor(props) {
+    super(props);
+    this.inputElementRef = React.createRef();
   }
-  componentDidMount(){
+
+  static contextType = AuthContext; // "contextType" - зарезервированное свойство в Реакте
+  // здесь мы можем тоже подключать контекст таким образом
+  // это выражение предоставляет компоненте свойство "context"
+
+  componentDidMount() {
     // document.querySelector('input').focus()
     // this.inputElement.focus()
-    this.inputElementRef.current.focus()
+    this.inputElementRef.current.focus();
+    console.log(this.context);
   }
   render() {
     console.log("[Person.js rendering...]");
@@ -67,6 +74,13 @@ class Person extends Component {
       // </React.Fragment>
 
       <Auxilery>
+        {this.context.authenticated ? "Authenticated" : "Please log in"}
+        {/* <AuthContext.Consumer>
+          {(context) =>
+            context.authenticated ? "Authenticated" : "Please log in"
+          }
+        </AuthContext.Consumer> */}
+        {/* {this.props.isAuth ? "Authenticated" : "Please log in"} */}
         <p onClick={this.props.click}>
           I'm {this.props.name} and I am {this.props.age} years old!
         </p>

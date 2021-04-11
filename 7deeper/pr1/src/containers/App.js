@@ -4,6 +4,7 @@ import Persons from "../components/Persons/Persons";
 import Cockpit from "../components/Cockpit/Cockpit";
 import withClass from "../hoc/withClass";
 import Auxilery from "../hoc/Auxilery";
+import AuthContext from "../context/auth-context";
 
 class App extends Component {
   constructor(props) {
@@ -20,6 +21,7 @@ class App extends Component {
     showPersons: false,
     showCockpit: true,
     changeCounter: 0,
+    isAuthenticated: false,
   };
   static getDerivedStateFromProps(props, state) {
     console.log("[App.js getDerivedStateFromProps]", props);
@@ -66,6 +68,7 @@ class App extends Component {
   toggleCockpit = () => {
     this.setState({ showCockpit: !this.state.showCockpit });
   };
+  loginHandler = () => this.setState({ isAuthenticated: true });
   render() {
     console.log("[App.js render]");
     let persons = null;
@@ -75,21 +78,30 @@ class App extends Component {
           persons={this.state.persons}
           clicked={this.deletePerson}
           changed={this.nameChangedHandler}
+          isAuthenticated={this.state.isAuthenticated}
         />
       );
     }
     return (
       <Auxilery>
         <button onClick={this.toggleCockpit}>Remove Cockpit</button>
-        {this.state.showCockpit && (
-          <Cockpit
-            title={this.props.appTitle}
-            personsLength={this.state.persons.length}
-            showPersons={this.state.showPersons}
-            togglePersons={this.togglePersonsHandler}
-          />
-        )}
-        {persons}
+        <AuthContext.Provider
+          value={{
+            authenticated: this.state.isAuthenticated,
+            login: this.loginHandler,
+          }} // здесь важно, чтоб соответствовала структура контексту, а значения могут быть дргими
+        >
+          {this.state.showCockpit && (
+            <Cockpit
+              title={this.props.appTitle}
+              personsLength={this.state.persons.length}
+              showPersons={this.state.showPersons}
+              togglePersons={this.togglePersonsHandler}
+              login={this.loginHandler}
+            />
+          )}
+          {persons}
+        </AuthContext.Provider>
       </Auxilery>
     );
     // return React.createElement('div', {className: 'App'}, React.createElement('h1', null, 'Does this work now?'));
